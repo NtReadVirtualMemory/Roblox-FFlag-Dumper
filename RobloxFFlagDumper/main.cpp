@@ -22,9 +22,6 @@ int main() {
     std::cout << "PID -> " << std::dec << Memory::ProcessId << std::endl;
     std::cout << "BaseAddress -> 0x" << std::hex << BaseAddress << std::endl;
 
-	const size_t scanBatchSize = 0x1000;
-	uintptr_t foundCandidate = 0;
-
 	for (uintptr_t Wow = 0x7A80000; Wow < 0x8000000; Wow += 0x8) {
 		uintptr_t MaybeMap = Memory::read<uintptr_t>(BaseAddress + Wow);
 
