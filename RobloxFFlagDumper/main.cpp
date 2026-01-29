@@ -93,19 +93,31 @@ FlagOffsetFound:
 	uintptr_t Last = Memory::read<uintptr_t>(FFlagList + 0x8);
 	uintptr_t Current = FFlagList;
 
+	bool FirstJsonEntry = true;
 	std::ofstream out("FFlags.hpp");
-	out << "#pragma once\n\n";
+	std::ofstream outjson("FFlags.json");
 
-	// Offsets
+	// JSON //
+	outjson << "{\n";
+	outjson << "    \"FFlagOffsets\": {\n";
+	outjson << "        \"FFlagList\": \"0x" << std::uppercase << std::hex << offsets::FFlagList << "\",\n";
+	outjson << "        \"ValueGetSet\": \"0x" << std::uppercase << std::hex << offsets::ValueGetSet << "\",\n"; 
+	outjson << "        \"FlagToValue\": \"0x" << std::uppercase << std::hex << offsets::FlagToValue << "\"\n";
+	outjson << "    },\n";
+	outjson << "    \"FFlags\": {\n";
+	// JSON //
+
+	// hpp //
+	out << "#pragma once\n\n";
 	out << "namespace FFlagOffsets\n{\n";
 	out << "    uintptr_t FFlagList" << " = 0x" << std::uppercase << std::hex << offsets::FFlagList << ";\n";
 	out << "    uintptr_t ValueGetSet" << " = 0x" << std::uppercase << std::hex << offsets::ValueGetSet << ";\n";
 	out << "    uintptr_t FlagToValue" << " = 0x" << std::uppercase << std::hex << offsets::FlagToValue << ";\n";
 	out << "}\n\n";
-
-	// FFlags
 	out << "namespace FFlags\n{\n";
-
+	// hpp //
+	
+	// FFlag Dumping
 	while (Current != 0 && Current != Last)
 	{
 		std::string Name = Memory::ReadString(Current + 0x10);
@@ -137,10 +149,22 @@ FlagOffsetFound:
 					c = '_';
 			}
 			out << "    uintptr_t " << Name << " = 0x" << std::uppercase << std::hex << offset << ";\n";
+
+			// json shit
+			if (!FirstJsonEntry)
+				outjson << ",\n";
+			else
+				FirstJsonEntry = false;
+
+			outjson << "        \"" << Name << "\": \"0x" << std::uppercase << std::hex << offset << "\"";
 		}
 
 		Current = Memory::read<uintptr_t>(Current);
 	}
+
+	outjson << "\n    }\n";
+	outjson << "}";
+	outjson.close();
 
 	out << "}";
 	out.close();
