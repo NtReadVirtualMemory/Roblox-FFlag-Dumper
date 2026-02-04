@@ -22,7 +22,8 @@ int main() {
     std::cout << "PID -> " << std::dec << Memory::ProcessId << std::endl;
     std::cout << "BaseAddress -> 0x" << std::hex << BaseAddress << std::endl;
 
-	for (uintptr_t Wow = 0x7A80000; Wow < 0x8000000; Wow += 0x8) {
+	// todo: make it faster, because when changes a lot, it takes forever...
+	for (uintptr_t Wow = 0x7700000; Wow < 0x8000000; Wow += 0x8) {
 		uintptr_t MaybeMap = Memory::read<uintptr_t>(BaseAddress + Wow);
 
 		if (!MaybeMap || MaybeMap < 0x10000)
