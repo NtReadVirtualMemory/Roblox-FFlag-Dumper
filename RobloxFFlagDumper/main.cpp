@@ -3,7 +3,6 @@
 #include <string>
 #include <fstream>
 #include <vector>
-
 #include "Memory.hpp"
 
 namespace offsets {
