@@ -24,7 +24,7 @@ int main() {
 
 	bool FoundMap = false;
 	uintptr_t ScanStart = 0x7000000;
-	uintptr_t ScanEnd = 0x8000000;
+	uintptr_t ScanEnd = 0x9000000;
 	size_t ChunkSize = 0x1000;
 
 	for (uintptr_t currentOffset = ScanStart; currentOffset < ScanEnd; currentOffset += ChunkSize) {
