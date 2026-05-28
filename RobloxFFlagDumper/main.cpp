@@ -7,7 +7,7 @@
 
 namespace offsets {
     uintptr_t FFlagList = 0x0;
-	uintptr_t ValueGetSet = 0x30; // Easy to Dump but im lazy atm
+	uintptr_t ValueGetSet = 0x0;
     uintptr_t FlagToValue = 0x0;
 }
 
@@ -24,7 +24,7 @@ int main() {
 
 	bool FoundMap = false;
 	uintptr_t ScanStart = 0x7000000;
-	uintptr_t ScanEnd = 0x9000000;
+	uintptr_t ScanEnd = 0x12000000;
 	size_t ChunkSize = 0x1000;
 
 	for (uintptr_t currentOffset = ScanStart; currentOffset < ScanEnd; currentOffset += ChunkSize) {
@@ -73,17 +73,21 @@ int main() {
                     std::string Name = Memory::ReadString(Current + 0x10);
                     if (Name == "BatchThumbnailMinWaitMs") {
                         std::cout << "BatchThumbnailMinWaitMs Found." << std::endl;
-                        uintptr_t ValueGetSet = Memory::read<uintptr_t>(Current + offsets::ValueGetSet);
-						for (uintptr_t PointerToValueOffset = 0x0; PointerToValueOffset < 0x300; PointerToValueOffset = PointerToValueOffset + 0x8) {
-							uintptr_t PointerToValue = Memory::read<uintptr_t>(ValueGetSet + PointerToValueOffset);
-							int Value = Memory::read<int>(PointerToValue);
-							if (Value == 15) {
-								FoundMap = true;
-								offsets::FFlagList = Wow;
-								offsets::FlagToValue = PointerToValueOffset;
-								goto FlagOffsetFound;
+						for (uintptr_t TestValueGetSet = 0x20; TestValueGetSet <= 0x100; TestValueGetSet += 0x8) {
+							uintptr_t ValueGetSet = Memory::read<uintptr_t>(Current + TestValueGetSet);
+							for (uintptr_t PointerToValueOffset = 0x0; PointerToValueOffset < 0x300; PointerToValueOffset = PointerToValueOffset + 0x8) {
+								uintptr_t PointerToValue = Memory::read<uintptr_t>(ValueGetSet + PointerToValueOffset);
+								int Value = Memory::read<int>(PointerToValue);
+								if (Value == 15) {
+									FoundMap = true;
+									offsets::FFlagList = Wow;
+									offsets::FlagToValue = PointerToValueOffset;
+									offsets::ValueGetSet = TestValueGetSet;
+									goto FlagOffsetFound;
+								}
 							}
 						}
+
                         std::cout << "Give up in life, you are a failure." << std::endl;
                         getchar();
                     }
